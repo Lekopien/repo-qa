@@ -16,11 +16,11 @@ def ask(question: str) -> dict:
     context = "\n\n".join(f"[{p}:{s}-{e}]\n{body}" for p, s, e, body in hits)
     msg = anthropic.Anthropic().messages.create(
         model=MODEL,
-        max_tokens=1000,
+        max_tokens=4000,
         system=SYSTEM,
         messages=[{"role": "user", "content": f"Snippets:\n{context}\n\nQuestion: {question}"}],
     )
     return {
-        "answer": msg.content[0].text,
+        "answer": "".join(b.text for b in msg.content if b.type == "text"),
         "sources": [{"path": p, "start": s, "end": e} for p, s, e, _ in hits],
     }
