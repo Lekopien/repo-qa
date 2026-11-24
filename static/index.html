@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>repoqa</title>
+<style>
+  :root { --bg:#fff; --fg:#1a1a1a; --muted:#666; --card:#f5f5f4; --accent:#d97706; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161616; --fg:#eee; --muted:#999; --card:#222; } }
+  body { font:16px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--fg); max-width:720px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:1.3rem; }
+  form { display:flex; gap:8px; }
+  input { flex:1; padding:10px; font-size:1rem; border:1px solid var(--muted); border-radius:8px; background:var(--card); color:var(--fg); }
+  button { padding:10px 16px; border:0; border-radius:8px; background:var(--accent); color:#fff; font-size:1rem; cursor:pointer; }
+  #answer { white-space:pre-wrap; background:var(--card); padding:14px; border-radius:8px; margin-top:16px; }
+  #sources { color:var(--muted); font:13px ui-monospace,monospace; margin-top:12px; }
+</style>
+</head>
+<body>
+<h1>repoqa: ask your codebase</h1>
+<form id="f"><input id="q" placeholder="How does authentication work?" required><button>Ask</button></form>
+<div id="answer" hidden></div>
+<div id="sources"></div>
+<script>
+const f = document.getElementById("f"), a = document.getElementById("answer"), s = document.getElementById("sources");
+f.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  a.hidden = false; a.textContent = "Thinking..."; s.textContent = "";
+  try {
+    const r = await fetch("/api/ask", { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ question: document.getElementById("q").value }) });
+    const d = await r.json();
+    a.textContent = d.answer;
+    s.textContent = d.sources.map(x => `${x.path}:${x.start}-${x.end}`).join("\n");
+  } catch (err) { a.textContent = "Error: " + err.message; }
+});
+</script>
+</body>
+</html>

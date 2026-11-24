@@ -1,0 +1,13 @@
+[project]
+name = "repoqa"
+version = "0.1.0"
+description = "Ask questions about any GitHub repo and get answers with file and line citations."
+requires-python = ">=3.10"
+dependencies = ["anthropic>=0.40", "fastapi>=0.110", "uvicorn>=0.29"]
+
+[project.scripts]
+repoqa = "repoqa.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
